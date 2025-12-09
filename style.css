@@ -1,8 +1,10 @@
 :root { --hx: 50%; --hy: 50%; }
 
 html, body {
-  margin: 0; padding: 0;
-  width: 100%; height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: #000;
 }
@@ -30,21 +32,24 @@ html, body {
   pointer-events: none;
 }
 
-/* AUTO-SIZED SCREEN BLOCK */
+/* SCREEN-SHAPED BLOCK */
 .center-block {
   position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   background: #000;
-  z-index: 3;
 
+  width: 0;
+  height: 0;
+  border-radius: 0;
+
+  z-index: 3;
   box-shadow:
     0 0 30px #000,
     0 0 80px #000;
 }
 
-/* HINT */
 .hint {
   position: fixed;
   bottom: 1rem;
@@ -54,20 +59,3 @@ html, body {
   opacity: .7;
   z-index: 10;
 }
-
-/* MOTION BUTTON */
-#motionBtn {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  padding: .5rem .9rem;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.3);
-  backdrop-filter: blur(10px);
-  z-index: 20;
-  font-size: .8rem;
-  display: none;
-}
-#motionBtn.visible { display: block; }
