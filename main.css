@@ -1,0 +1,461 @@
+/* RESET / BASE */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Centered pages (source + trueSource) */
+body.source-page,
+body.true-source-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Index page body */
+body.index-page {
+  overflow: hidden;
+}
+
+/* ────────────────────────────────────────────────
+   MAIN SITE (index)
+   ──────────────────────────────────────────────── */
+#site {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#site.revealed { opacity: 1; }
+
+.hello {
+  font-family: "Courier New", Courier, "SF Mono", Menlo, monospace;
+  font-size: 2.8rem;
+  white-space: pre-line;
+  text-align: center;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 2px rgba(255,255,255,0.25);
+}
+
+.hello-cursor {
+  display: inline-block;
+  width: 0.6ch;
+  text-align: left;
+  animation: hello-blink 700ms steps(1,end) infinite;
+}
+
+@keyframes hello-blink {
+  0%, 49%  { opacity: 1; }
+  50%,100% { opacity: 0; }
+}
+
+/* ────────────────────────────────────────────────
+   INTRO OVERLAY (index)
+   ──────────────────────────────────────────────── */
+#index-page #intro {} /* keeps selector sanity if needed */
+
+#index-page #intro,
+#index-page .intro-inner {} /* left empty intentionally */
+
+#index-page #intro {}
+
+#index-page #intro {}
+
+#index-page #intro {}
+
+#index-page #intro {}
+
+/* Real styles (not scoped to id to keep it simple) */
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 350ms ease-out;
+}
+#intro.fade-out { opacity: 0; pointer-events: none; }
+
+#intro.v-roll { animation: v-roll 120ms ease-out; }
+@keyframes v-roll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-12px); }
+}
+
+.intro-inner {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  padding: 32px;
+  text-align: center;
+  z-index: 1;
+  transition: opacity 250ms ease-out;
+}
+
+.headline {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+  text-shadow: 0 0 4px rgba(255,255,255,0.4);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.headline.flash { animation: hard-flash 120ms steps(2,end); }
+@keyframes hard-flash {
+  0% { opacity: 0; filter: blur(1px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+/* ────────────────────────────────────────────────
+   LOADING BAR (index)
+   ──────────────────────────────────────────────── */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 14px;
+  transition: opacity 250ms ease-out;
+}
+.loading-wrap.hidden { opacity: 0; visibility: hidden; }
+
+.loading-bar {
+  width: 240px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+.loading-bar span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #f5f5f5;
+  animation: fill-bar 4s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+@keyframes fill-bar {
+  0% { width: 0%; }
+  60% { width: 92%; }
+  100% { width: 100%; }
+}
+
+/* ────────────────────────────────────────────────
+   TERMINAL PANEL (index)
+   ──────────────────────────────────────────────── */
+.terminal-wrap {
+  margin: 0 auto;
+  margin-top: 4px;
+  width: 100%;
+  max-width: 540px;
+  height: 120px;
+  background: #050505;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 0 12px rgba(0,0,0,0.8);
+  overflow: hidden;
+  position: relative;
+  padding: 8px 10px;
+  z-index: 5;
+  text-align: left;
+}
+
+/* Hard lock terminal to left alignment */
+.terminal-wrap,
+.terminal-wrap *,
+#terminal,
+#terminal * {
+  text-align: left !important;
+}
+
+.terminal-header {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+  margin-bottom: 2px;
+}
+
+.terminal-body {
+  font-size: 0.65rem;
+  line-height: 1.25;
+  height: calc(100% - 14px);
+  overflow: hidden;
+  position: relative;
+}
+
+#terminal {
+  position: absolute;
+  inset: 0;
+  overflow-y: hidden;
+  padding-right: 12px;
+  color: #d8d8d8;
+  text-shadow: 0 0 1px rgba(255,255,255,0.6);
+}
+#terminal div { white-space: nowrap; }
+
+.terminal-cursor {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  font-size: 0.7rem;
+  animation: cursor-blink 600ms steps(1,end) infinite;
+}
+@keyframes cursor-blink {
+  0%,49% { opacity: 1; }
+  50%,100% { opacity: 0; }
+}
+
+.terminal-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03) 0px,
+    rgba(255,255,255,0.03) 1px,
+    rgba(0,0,0,0.4) 2px,
+    rgba(0,0,0,0.4) 3px
+  );
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* ────────────────────────────────────────────────
+   CRT STATIC BACKGROUND (index)
+   ──────────────────────────────────────────────── */
+#intro.stage-2::before,
+#intro.stage-2::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#intro.stage-2::before {
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,0.12) 0px,
+      rgba(255,255,255,0.12) 1px,
+      rgba(0,0,0,0.0) 1px,
+      rgba(0,0,0,0.0) 3px
+    ),
+    repeating-linear-gradient(0deg,
+      rgba(255,255,255,0.10) 0px,
+      rgba(255,255,255,0.10) 1px,
+      rgba(0,0,0,0.0) 1px,
+      rgba(0,0,0,0.0) 3px
+    );
+  background-size: 3px 3px, 2px 2px;
+  opacity: 0.95;
+  mix-blend-mode: screen;
+  animation: static-shift 80ms steps(2,end) infinite;
+}
+@keyframes static-shift {
+  0% { transform: translate(0,0); }
+  25% { transform: translate(-1px,1px); }
+  50% { transform: translate(1px,-1px); }
+  75% { transform: translate(2px,1px); }
+  100% { transform: translate(-2px,-1px); }
+}
+
+#intro.stage-2::after {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.05) 0px,
+    rgba(255,255,255,0.05) 1px,
+    rgba(0,0,0,0.55) 2px,
+    rgba(0,0,0,0.55) 3px
+  );
+  opacity: 0.7;
+  animation: scan-flicker 90ms infinite alternate;
+}
+@keyframes scan-flicker {
+  0% { opacity: 0.55; }
+  100% { opacity: 0.95; }
+}
+
+/* ────────────────────────────────────────────────
+   FLASH (impact pulses) – shared (index + trueSource)
+   ──────────────────────────────────────────────── */
+#flash {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30000;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255,255,255,1) 0%,
+    rgba(255,255,255,0.8) 40%,
+    rgba(255,255,255,0.5) 60%,
+    rgba(255,255,255,0) 100%
+  );
+  will-change: opacity, transform, filter;
+  transform: translateZ(0);
+  transition: opacity 25ms linear;
+  filter: saturate(1.4) hue-rotate(0);
+}
+
+#flash.pop {
+  opacity: 1;
+  transform: scale(1.03);
+  filter: saturate(2.2) hue-rotate(15deg);
+}
+
+/* ────────────────────────────────────────────────
+   SOURCE LINK (bottom-right, index)
+   ──────────────────────────────────────────────── */
+.source-link {
+  position: fixed;
+  bottom: 16px;
+  right: 20px;
+  z-index: 31000;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 600ms ease-out, color 200ms;
+  pointer-events: none;
+}
+
+/* Fade in once main site is revealed */
+#site.revealed ~ .source-link {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.source-link:hover {
+  color: #ffffff;
+}
+
+/* ────────────────────────────────────────────────
+   SOURCE PAGE (source.html)
+   ──────────────────────────────────────────────── */
+
+.source-page .wrap {
+  text-align: left;
+  max-width: 720px;
+  width: 100%;
+  padding: 24px;
+  letter-spacing: 0.03em;
+  opacity: 0;
+  animation: fadeIn 900ms ease-out forwards;
+}
+
+.source-page .terminal-panel {
+  border: 1px solid rgba(255,255,255,0.18);
+  background: #050505;
+  border-radius: 4px;
+  box-shadow: 0 0 16px rgba(0,0,0,0.8);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.terminal-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 6px;
+  letter-spacing: 0.12em;
+}
+
+.terminal-body {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  min-height: 120px;
+  text-shadow: 0 0 1px rgba(255,255,255,0.4);
+}
+
+#type-body {
+  display: inline;
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.6ch;
+  animation: blink 700ms steps(1,end) infinite;
+}
+
+@keyframes blink {
+  0%,49% { opacity: 1; }
+  50%,100% { opacity: 0; }
+}
+
+.back-link {
+  margin-top: 16px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+}
+a:hover {
+  color: #fff;
+  text-shadow: 0 0 6px rgba(255,255,255,0.5);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; filter: blur(4px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+
+/* ────────────────────────────────────────────────
+   TRUE SOURCE PAGE (trueSource.html)
+   ──────────────────────────────────────────────── */
+
+.true-source-page .wrap {
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(4px);
+  transition: opacity 0.9s ease-out, filter 0.9s ease-out;
+  text-align: left;
+  max-width: 720px;
+  width: 100%;
+  padding: 24px;
+  letter-spacing: 0.03em;
+  position: relative;
+  z-index: 10;
+}
+
+/* Override pointer cursor from source-page */
+.true-source-page .terminal-panel {
+  border: 1px solid rgba(255,255,255,0.18);
+  background: #050505;
+  border-radius: 4px;
+  box-shadow: 0 0 16px rgba(0,0,0,0.8);
+  padding: 14px 16px;
+  overflow: hidden;
+  cursor: default;
+}
