@@ -1,5 +1,5 @@
 /* ============================================================
-   AUTO-MATCH SCREEN SHAPE FOR ANY DEVICE
+   RESPONSIVE CENTER BLOCK (fixed size)
 ============================================================ */
 function updateCenterBlock() {
   const block = document.querySelector(".center-block");
@@ -7,17 +7,30 @@ function updateCenterBlock() {
   const W = window.innerWidth;
   const H = window.innerHeight;
 
-  // Rounded radius based on device size
-  const radius = Math.min(W, H) * 0.09;
+  /* Keep block smaller than screen: 90% width */
+  const targetWidth = W * 0.90;
 
-  block.style.width = W + "px";
-  block.style.height = H + "px";
+  /* Maintain device aspect ratio */
+  const aspect = W / H;          // actual device aspect ratio
+  const targetHeight = targetWidth / aspect;
+
+  /* Scale down further if too tall */
+  const maxHeight = H * 0.90;
+  const finalHeight = Math.min(targetHeight, maxHeight);
+
+  /* Recompute width if height limited */
+  const finalWidth = finalHeight * aspect;
+
+  /* Rounded corners scaled to device */
+  const radius = Math.min(finalWidth, finalHeight) * 0.08;
+
+  block.style.width = finalWidth + "px";
+  block.style.height = finalHeight + "px";
   block.style.borderRadius = radius + "px";
 }
 
 updateCenterBlock();
 window.addEventListener("resize", updateCenterBlock);
-
 
 /* ============================================================
    GRADIENT MOTION (pointer + accelerometer)
@@ -37,10 +50,10 @@ function trackPointer(x,y){
   setGradientByPercent((x/innerWidth)*100, (y/innerHeight)*100);
 }
 
-window.addEventListener("mousemove", e => trackPointer(e.clientX, e.clientY));
-window.addEventListener("touchmove", e => {
-  const t = e.touches[0];
-  if (t) trackPointer(t.clientX, t.clientY);
+window.addEventListener("mousemove", e=>trackPointer(e.clientX,e.clientY));
+window.addEventListener("touchmove", e=>{
+  const t=e.touches[0];
+  if(t) trackPointer(t.clientX,t.clientY);
 },{ passive: true });
 
 /* ACCELEROMETER */
@@ -55,12 +68,12 @@ function attachMotion(){
 
   window.addEventListener("devicemotion", e=>{
     const acc=e.accelerationIncludingGravity;
-    if (!acc) return;
+    if(!acc) return;
 
-    let ax = acc.x || 0;
-    let ay = acc.y || 0;
+    let ax=acc.x||0;
+    let ay=acc.y||0;
 
-    if (!baselineSet){
+    if(!baselineSet){
       baselineSet=true;
       baseAx=ax;
       baseAy=ay;
@@ -75,8 +88,8 @@ function attachMotion(){
     filteredDy+=(dy-filteredDy)*smoothing;
 
     const maxDelta=5;
-    let nx=Math.max(-1,Math.min(1, filteredDx/maxDelta));
-    let ny=Math.max(-1,Math.min(1, filteredDy/maxDelta));
+    let nx=Math.max(-1,Math.min(1,filteredDx/maxDelta));
+    let ny=Math.max(-1,Math.min(1,filteredDy/maxDelta));
 
     motionActive=true;
 
@@ -88,17 +101,15 @@ function attachMotion(){
 }
 
 async function requestMotion(){
-  if (typeof DeviceMotionEvent==="undefined") return;
+  if(typeof DeviceMotionEvent==="undefined") return;
 
   try{
-    if (typeof DeviceMotionEvent.requestPermission==="function"){
-      const res = await DeviceMotionEvent.requestPermission();
-      if (res==="granted"){
+    if(typeof DeviceMotionEvent.requestPermission==="function"){
+      const res=await DeviceMotionEvent.requestPermission();
+      if(res==="granted"){
         attachMotion();
         motionBtn.classList.remove("visible");
-      } else {
-        motionBtn.textContent="Motion Denied";
-      }
+      } else motionBtn.textContent="Motion Denied";
     } else {
       attachMotion();
       motionBtn.classList.remove("visible");
@@ -108,7 +119,7 @@ async function requestMotion(){
   }
 }
 
-if (typeof DeviceMotionEvent!=="undefined")
+if(typeof DeviceMotionEvent!=="undefined")
   motionBtn.classList.add("visible");
 
 motionBtn.addEventListener("click", requestMotion);
@@ -147,35 +158,31 @@ function drawMask() {
 
   ctx.globalCompositeOperation="destination-out";
 
-  for (let n=0; n<count; n++){
+  for(let n=0;n<count;n++){
     const r=spacing*Math.sqrt(n);
     const t=n*phi;
-
     const x=cx+r*Math.cos(t);
     const y=cy+r*Math.sin(t);
 
     const jx=(Math.random()-0.5)*1.2;
     const jy=(Math.random()-0.5)*1.2;
-
     const sz=pickSize(n);
 
     ctx.beginPath();
-    ctx.arc(x+jx, y-jy, sz.holeR, 0, Math.PI*2);
+    ctx.arc(x+jx,y+jy,sz.holeR,0,Math.PI*2);
     ctx.fill();
   }
 
   ctx.globalCompositeOperation="source-over";
 
-  for (let n=0; n<count; n++){
+  for(let n=0;n<count;n++){
     const r=spacing*Math.sqrt(n);
     const t=n*phi;
-
     const x=cx+r*Math.cos(t);
     const y=cy+r*Math.sin(t);
 
     const jx=(Math.random()-0.5)*1.2;
     const jy=(Math.random()-0.5)*1.2;
-
     const sz=pickSize(n);
 
     const grad=ctx.createRadialGradient(
@@ -189,7 +196,7 @@ function drawMask() {
 
     ctx.fillStyle=grad;
     ctx.beginPath();
-    ctx.arc(x+jx, y+jy, sz.rimR, 0, Math.PI*2);
+    ctx.arc(x+jx,y+jy,sz.rimR,0,Math.PI*2);
     ctx.fill();
   }
 }
