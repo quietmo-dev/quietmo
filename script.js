@@ -1,5 +1,5 @@
 /* ============================================================
-   RESPONSIVE CENTER BLOCK (fixed size)
+   RESPONSIVE CENTER BLOCK
 ============================================================ */
 function updateCenterBlock() {
   const block = document.querySelector(".center-block");
@@ -7,21 +7,14 @@ function updateCenterBlock() {
   const W = window.innerWidth;
   const H = window.innerHeight;
 
-  /* Keep block smaller than screen: 90% width */
   const targetWidth = W * 0.90;
-
-  /* Maintain device aspect ratio */
-  const aspect = W / H;          // actual device aspect ratio
+  const aspect = W / H;
   const targetHeight = targetWidth / aspect;
 
-  /* Scale down further if too tall */
   const maxHeight = H * 0.90;
   const finalHeight = Math.min(targetHeight, maxHeight);
-
-  /* Recompute width if height limited */
   const finalWidth = finalHeight * aspect;
 
-  /* Rounded corners scaled to device */
   const radius = Math.min(finalWidth, finalHeight) * 0.08;
 
   block.style.width = finalWidth + "px";
@@ -31,6 +24,7 @@ function updateCenterBlock() {
 
 updateCenterBlock();
 window.addEventListener("resize", updateCenterBlock);
+
 
 /* ============================================================
    GRADIENT MOTION (pointer + accelerometer)
@@ -56,73 +50,52 @@ window.addEventListener("touchmove", e=>{
   if(t) trackPointer(t.clientX,t.clientY);
 },{ passive: true });
 
-/* ACCELEROMETER */
-let baseAx=0, baseAy=0, filteredDx=0, filteredDy=0;
-let baselineSet=false, motionAttached=false;
 
-const motionBtn=document.getElementById("motionBtn");
+/* ============================================================
+   ACCELEROMETER — auto attach, no button
+============================================================ */
+
+let baseAx=0, baseAy=0, filteredDx=0, filteredDy=0;
+let baselineSet=false;
 
 function attachMotion(){
-  if (motionAttached) return;
-  motionAttached=true;
-
   window.addEventListener("devicemotion", e=>{
-    const acc=e.accelerationIncludingGravity;
-    if(!acc) return;
+    const acc = e.accelerationIncludingGravity;
+    if (!acc) return;
 
-    let ax=acc.x||0;
-    let ay=acc.y||0;
+    let ax = acc.x || 0;
+    let ay = acc.y || 0;
 
-    if(!baselineSet){
-      baselineSet=true;
-      baseAx=ax;
-      baseAy=ay;
+    if (!baselineSet){
+      baselineSet = true;
+      baseAx = ax;
+      baseAy = ay;
       return;
     }
 
-    let dx=ax-baseAx;
-    let dy=ay-baseAy;
+    let dx = ax - baseAx;
+    let dy = ay - baseAy;
 
-    const smoothing=0.15;
-    filteredDx+=(dx-filteredDx)*smoothing;
-    filteredDy+=(dy-filteredDy)*smoothing;
+    const smoothing = 0.15;
+    filteredDx += (dx - filteredDx) * smoothing;
+    filteredDy += (dy - filteredDy) * smoothing;
 
-    const maxDelta=5;
-    let nx=Math.max(-1,Math.min(1,filteredDx/maxDelta));
-    let ny=Math.max(-1,Math.min(1,filteredDy/maxDelta));
+    const maxDelta = 5;
+    let nx = Math.max(-1, Math.min(1, filteredDx / maxDelta));
+    let ny = Math.max(-1, Math.min(1, filteredDy / maxDelta));
 
-    motionActive=true;
+    motionActive = true;
 
-    const px=(nx+1)*50;
-    const py=(1-(ny+1)/2)*100;
+    const px = (nx + 1) * 50;
+    const py = (1 - (ny + 1) / 2) * 100;
 
-    setGradientByPercent(px,py);
+    setGradientByPercent(px, py);
   });
 }
 
-async function requestMotion(){
-  if(typeof DeviceMotionEvent==="undefined") return;
+/* iOS will auto-prompt when this executes */
+attachMotion();
 
-  try{
-    if(typeof DeviceMotionEvent.requestPermission==="function"){
-      const res=await DeviceMotionEvent.requestPermission();
-      if(res==="granted"){
-        attachMotion();
-        motionBtn.classList.remove("visible");
-      } else motionBtn.textContent="Motion Denied";
-    } else {
-      attachMotion();
-      motionBtn.classList.remove("visible");
-    }
-  } catch(e){
-    motionBtn.textContent="Motion Error";
-  }
-}
-
-if(typeof DeviceMotionEvent!=="undefined")
-  motionBtn.classList.add("visible");
-
-motionBtn.addEventListener("click", requestMotion);
 
 
 /* ============================================================
@@ -158,9 +131,10 @@ function drawMask() {
 
   ctx.globalCompositeOperation="destination-out";
 
-  for(let n=0;n<count;n++){
+  for (let n=0; n<count; n++){
     const r=spacing*Math.sqrt(n);
     const t=n*phi;
+
     const x=cx+r*Math.cos(t);
     const y=cy+r*Math.sin(t);
 
@@ -169,15 +143,16 @@ function drawMask() {
     const sz=pickSize(n);
 
     ctx.beginPath();
-    ctx.arc(x+jx,y+jy,sz.holeR,0,Math.PI*2);
+    ctx.arc(x+jx, y+jy, sz.holeR, 0, Math.PI*2);
     ctx.fill();
   }
 
   ctx.globalCompositeOperation="source-over";
 
-  for(let n=0;n<count;n++){
+  for (let n=0; n<count; n++){
     const r=spacing*Math.sqrt(n);
     const t=n*phi;
+
     const x=cx+r*Math.cos(t);
     const y=cy+r*Math.sin(t);
 
@@ -196,7 +171,7 @@ function drawMask() {
 
     ctx.fillStyle=grad;
     ctx.beginPath();
-    ctx.arc(x+jx,y+jy,sz.rimR,0,Math.PI*2);
+    ctx.arc(x+jx, y+jy, sz.rimR, 0, Math.PI*2);
     ctx.fill();
   }
 }
