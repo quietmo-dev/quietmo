@@ -38,7 +38,7 @@
     pointer-events: none;
   }
 
-  /* BLACK BLOCK — SHORTER + HIGHER ON SCREEN */
+  /* BLACK BLOCK */
   .center-block {
     position: fixed;
     left: 50%;
@@ -63,7 +63,6 @@
     justify-content: center;
   }
 
-  /* CLEAN TYPEWRITER TEXT */
   .title {
     font-family: "Courier New", Courier, monospace;
     white-space: pre-line;
@@ -109,7 +108,20 @@ window.addEventListener("touchmove", e => {
   if (t) trackPointer(t.clientX, t.clientY);
 }, { passive: true });
 
-/* ACCELEROMETER */
+/* ============================================================
+   CHAOTIC GRADIENT MOTION
+============================================================ */
+
+let tChaos = 0;
+function chaos() {
+  tChaos += 0.005;
+  return {
+    x: Math.sin(tChaos * 1.7) * 0.4 + Math.sin(tChaos * 3.3 + 1.2) * 0.2,
+    y: Math.sin(tChaos * 1.1 + 0.5) * 0.4 + Math.sin(tChaos * 2.7 + 2.4) * 0.2
+  };
+}
+
+/* ACCELEROMETER + CHAOS */
 let baseAx = 0, baseAy = 0;
 let filteredDx = 0, filteredDy = 0;
 let baselineSet = false;
@@ -137,7 +149,14 @@ function attachMotion() {
 
     motionActive = true;
 
-    setGradientByPercent((nx + 1) * 50, (1 - (ny + 1) / 2) * 100);
+    /* CHAOS BOOST */
+    const c = chaos();
+    const chaosStrength = 0.35;
+
+    const fx = Math.max(-1, Math.min(1, nx + c.x * chaosStrength));
+    const fy = Math.max(-1, Math.min(1, ny + c.y * chaosStrength));
+
+    setGradientByPercent((fx + 1) * 50, (1 - (fy + 1) / 2) * 100);
   });
 }
 
@@ -172,10 +191,8 @@ function drawMask() {
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-
       const hx = offsetX + c * spacing + spacing / 2;
       const hy = offsetY + r * spacing + spacing / 2;
-
       ctx.beginPath();
       ctx.arc(hx, hy, radius, 0, Math.PI * 2);
       ctx.fill();
@@ -187,22 +204,9 @@ function drawMask() {
 
 drawMask();
 window.addEventListener("resize", drawMask);
-
-/* extra safety: redraw when tab becomes visible or page is shown again */
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    // small timeout lets the browser settle new viewport height
-    setTimeout(drawMask, 50);
-  }
-});
-
-window.addEventListener("pageshow", () => {
-  setTimeout(drawMask, 50);
-});
-
-window.addEventListener("orientationchange", () => {
-  setTimeout(drawMask, 200);
-});
+document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(drawMask, 50); });
+window.addEventListener("pageshow", () => setTimeout(drawMask, 50));
+window.addEventListener("orientationchange", () => setTimeout(drawMask, 200));
 </script>
 
 </body>
