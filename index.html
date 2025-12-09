@@ -30,7 +30,7 @@
     pointer-events: none;
   }
 
-  /* CANVAS HOLE MASK */
+  /* CANVAS FOR HOLES */
   #mask {
     position: fixed;
     inset: 0;
@@ -38,18 +38,18 @@
     pointer-events: none;
   }
 
-  /* BLACK INSET BLOCK */
+  /* BLACK BLOCK — SHORTER + HIGHER ON SCREEN */
   .center-block {
     position: fixed;
     left: 50%;
-    top: 50%;
+    top: 45%;                    /* was 50% → moves up */
     transform: translate(-50%, -50%);
     background: #000;
 
     width: 90vw;
-    height: 90vh;
+    height: 75vh;                /* was 90vh → shorter */
     max-width: 600px;
-    max-height: 1200px;
+    max-height: 1000px;
 
     border-radius: 6vw;
     z-index: 3;
@@ -69,7 +69,7 @@
 
 <script>
 /* ============================================================
-   MOTION-BASED HOLOGRAM
+   GRADIENT MOTION
 ============================================================ */
 
 function setGradientByPercent(px, py) {
@@ -91,6 +91,7 @@ window.addEventListener("touchmove", e => {
   const t = e.touches[0];
   if (t) trackPointer(t.clientX, t.clientY);
 }, { passive: true });
+
 
 /* ACCELEROMETER */
 let baseAx = 0, baseAy = 0;
@@ -120,14 +121,14 @@ function attachMotion() {
 
     motionActive = true;
 
-    setGradientByPercent((nx + 1) * 50, (1 - (ny + 1)/2) * 100);
+    setGradientByPercent((nx + 1) * 50, (1 - (ny + 1) / 2) * 100);
   });
 }
 
 attachMotion();
 
 /* ============================================================
-   EVEN ROUND HOLES — CENTERED GRID
+   CENTERED EVEN HOLE GRID
 ============================================================ */
 
 function drawMask() {
@@ -139,30 +140,25 @@ function drawMask() {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const spacing = 16;     // grid spacing
-  const radius  = 3.5;    // hole radius
-  const jitter  = 0;      // no jitter
-
-  /* ----- CENTER THE GRID ----- */
+  const spacing = 16;
+  const radius  = 3.5;
 
   const cols = Math.ceil(canvas.width  / spacing);
   const rows = Math.ceil(canvas.height / spacing);
 
-  // compute leftover empty space in px
-  const leftoverX = canvas.width  - (cols * spacing);
-  const leftoverY = canvas.height - (rows * spacing);
+  const leftoverX = canvas.width  - cols * spacing;
+  const leftoverY = canvas.height - rows * spacing;
 
-  // half of leftover becomes the offset → grid is centered
   const offsetX = leftoverX / 2;
   const offsetY = leftoverY / 2;
 
   ctx.globalCompositeOperation = "destination-out";
 
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
 
-      const hx = offsetX + col * spacing + spacing / 2;
-      const hy = offsetY + row * spacing + spacing / 2;
+      const hx = offsetX + c * spacing + spacing / 2;
+      const hy = offsetY + r * spacing + spacing / 2;
 
       ctx.beginPath();
       ctx.arc(hx, hy, radius, 0, Math.PI * 2);
