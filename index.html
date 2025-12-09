@@ -1,21 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Holographic Sunflower Canvas Mask</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<title>Centered Hole Grid + Hologram</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+  :root { --hx: 50%; --hy: 50%; }
+
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #000;
+  }
+
+  /* HOLOGRAM BACKGROUND */
+  .holo-bg {
+    position: fixed;
+    inset: -40%;
+    z-index: 0;
+    background:
+      radial-gradient(circle at var(--hx) var(--hy),
+        #00ffe0 0%, #00ff66 18%, #ffe600 32%,
+        #ff00ff 50%, #0040ff 68%, #000 100%);
+    filter: blur(30px);
+    opacity: 0.95;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  /* CANVAS HOLE MASK */
+  #mask {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* BLACK INSET BLOCK */
+  .center-block {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #000;
+
+    width: 90vw;
+    height: 90vh;
+    max-width: 600px;
+    max-height: 1200px;
+
+    border-radius: 6vw;
+    z-index: 3;
+
+    box-shadow:
+      0 0 30px #000,
+      0 0 80px #000;
+  }
+</style>
 </head>
 
 <body>
 
-  <div class="holo-bg"></div>
-  <canvas id="mask"></canvas>
+<div class="holo-bg"></div>
+<canvas id="mask"></canvas>
+<div class="center-block"></div>
 
-  <div class="center-block"></div>
+<script>
+/* ============================================================
+   MOTION-BASED HOLOGRAM
+============================================================ */
 
-  <div class="hint">Tilt / touch / mouse to move hologram</div>
+function setGradientByPercent(px, py) {
+  document.documentElement.style.setProperty("--hx", px + "%");
+  document.documentElement.style.setProperty("--hy", py + "%");
+}
 
-  <script src="script.js"></script>
+setGradientByPercent(50, 50);
+
+let motionActive = false;
+
+function trackPointer(x, y) {
+  if (motionActive) return;
+  setGradientByPercent((x / innerWidth) * 100, (y / innerHeight) * 100);
+}
+
+window.addEventListener("mousemove", e => trackPointer(e.clientX, e.clientY));
+window.addEventListener("touchmove", e => {
+  const t = e.touches[0];
+  if (t) trackPointer(t.clientX, t.clientY);
+}, { passive: true });
+
+/* ACCELEROMETER */
+let baseAx = 0, baseAy = 0;
+let filteredDx = 0, filteredDy = 0;
+let baselineSet = false;
+
+function attachMotion() {
+  window.addEventListener("devicemotion", e => {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc) return;
+
+    let ax = acc.x || 0;
+    let ay = acc.y || 0;
+
+    if (!baselineSet) {
+      baselineSet = true;
+      baseAx = ax;
+      baseAy = ay;
+      return;
+    }
+
+    filteredDx += (ax - baseAx - filteredDx) * 0.15;
+    filteredDy += (ay - baseAy - filteredDy) * 0.15;
+
+    let nx = Math.max(-1, Math.min(1, filteredDx / 5));
+    let ny = Math.max(-1, Math.min(1, filteredDy / 5));
+
+    motionActive = true;
+
+    setGradientByPercent((nx + 1) * 50, (1 - (ny + 1)/2) * 100);
+  });
+}
+
+attachMotion();
+
+/* ============================================================
+   EVEN ROUND HOLES — CENTERED GRID
+============================================================ */
+
+function drawMask() {
+  const canvas = document.getElementById("mask");
+  const ctx = canvas.getContext("2d");
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const spacing = 16;     // grid spacing
+  const radius  = 3.5;    // hole radius
+  const jitter  = 0;      // no jitter
+
+  /* ----- CENTER THE GRID ----- */
+
+  const cols = Math.ceil(canvas.width  / spacing);
+  const rows = Math.ceil(canvas.height / spacing);
+
+  // compute leftover empty space in px
+  const leftoverX = canvas.width  - (cols * spacing);
+  const leftoverY = canvas.height - (rows * spacing);
+
+  // half of leftover becomes the offset → grid is centered
+  const offsetX = leftoverX / 2;
+  const offsetY = leftoverY / 2;
+
+  ctx.globalCompositeOperation = "destination-out";
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+
+      const hx = offsetX + col * spacing + spacing / 2;
+      const hy = offsetY + row * spacing + spacing / 2;
+
+      ctx.beginPath();
+      ctx.arc(hx, hy, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  ctx.globalCompositeOperation = "source-over";
+}
+
+drawMask();
+window.addEventListener("resize", drawMask);
+</script>
+
 </body>
 </html>
