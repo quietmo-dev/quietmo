@@ -149,7 +149,6 @@ function attachMotion() {
 
     motionActive = true;
 
-    /* CHAOS BOOST */
     const c = chaos();
     const chaosStrength = 0.35;
 
@@ -163,14 +162,31 @@ function attachMotion() {
 attachMotion();
 
 /* ============================================================
-   CENTERED EVEN HOLE GRID
+   CENTERED EVEN HOLE GRID + ROBUST RESIZE
 ============================================================ */
+
+function resizeCanvasToViewport(canvas) {
+  const vw = window.innerWidth;
+  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+  // match CSS box explicitly
+  canvas.style.width  = vw + "px";
+  canvas.style.height = vh + "px";
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = vw * dpr;
+  canvas.height = vh * dpr;
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels
+  return ctx;
+}
 
 function drawMask() {
   const canvas = document.getElementById("mask");
-  const ctx = canvas.getContext("2d");
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
+  if (!canvas) return;
+
+  const ctx = resizeCanvasToViewport(canvas);
 
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -178,11 +194,14 @@ function drawMask() {
   const spacing = 16;
   const radius  = 3.5;
 
-  const cols = Math.ceil(canvas.width  / spacing);
-  const rows = Math.ceil(canvas.height / spacing);
+  const cols = Math.ceil((canvas.width  / (window.devicePixelRatio || 1)) / spacing);
+  const rows = Math.ceil((canvas.height / (window.devicePixelRatio || 1)) / spacing);
 
-  const leftoverX = canvas.width  - cols * spacing;
-  const leftoverY = canvas.height - rows * spacing;
+  const totalW = cols * spacing;
+  const totalH = rows * spacing;
+
+  const leftoverX = (canvas.width  / (window.devicePixelRatio || 1)) - totalW;
+  const leftoverY = (canvas.height / (window.devicePixelRatio || 1)) - totalH;
 
   const offsetX = leftoverX / 2;
   const offsetY = leftoverY / 2;
@@ -203,10 +222,30 @@ function drawMask() {
 }
 
 drawMask();
+
 window.addEventListener("resize", drawMask);
-document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(drawMask, 50); });
-window.addEventListener("pageshow", () => setTimeout(drawMask, 50));
-window.addEventListener("orientationchange", () => setTimeout(drawMask, 200));
+
+// extra safety: redraw when tab becomes visible or page is shown again
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    setTimeout(drawMask, 150);
+  }
+});
+
+window.addEventListener("pageshow", () => {
+  setTimeout(drawMask, 150);
+});
+
+window.addEventListener("orientationchange", () => {
+  setTimeout(drawMask, 200);
+});
+
+// optional: react to visual viewport changes (mobile browsers)
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", () => {
+    setTimeout(drawMask, 50);
+  });
+}
 </script>
 
 </body>
