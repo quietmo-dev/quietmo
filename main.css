@@ -55,32 +55,17 @@ body.index-page {
 .hello-cursor {
   display: inline-block;
   width: 0.6ch;
-  text-align: left;
   animation: hello-blink 700ms steps(1,end) infinite;
 }
 
 @keyframes hello-blink {
-  0%, 49%  { opacity: 1; }
+  0%, 49% { opacity: 1; }
   50%,100% { opacity: 0; }
 }
 
 /* ────────────────────────────────────────────────
    INTRO OVERLAY (index)
    ──────────────────────────────────────────────── */
-#index-page #intro {} /* keeps selector sanity if needed */
-
-#index-page #intro,
-#index-page .intro-inner {} /* left empty intentionally */
-
-#index-page #intro {}
-
-#index-page #intro {}
-
-#index-page #intro {}
-
-#index-page #intro {}
-
-/* Real styles (not scoped to id to keep it simple) */
 #intro {
   position: fixed;
   inset: 0;
@@ -94,7 +79,9 @@ body.index-page {
 }
 #intro.fade-out { opacity: 0; pointer-events: none; }
 
-#intro.v-roll { animation: v-roll 120ms ease-out; }
+#intro.v-roll {
+  animation: v-roll 120ms ease-out;
+}
 @keyframes v-roll {
   0% { transform: translateY(0); }
   100% { transform: translateY(-12px); }
@@ -119,7 +106,9 @@ body.index-page {
   white-space: nowrap;
   overflow: hidden;
 }
-.headline.flash { animation: hard-flash 120ms steps(2,end); }
+.headline.flash {
+  animation: hard-flash 120ms steps(2,end);
+}
 @keyframes hard-flash {
   0% { opacity: 0; filter: blur(1px); }
   100% { opacity: 1; filter: blur(0); }
@@ -139,7 +128,10 @@ body.index-page {
   margin-bottom: 14px;
   transition: opacity 250ms ease-out;
 }
-.loading-wrap.hidden { opacity: 0; visibility: hidden; }
+.loading-wrap.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
 
 .loading-bar {
   width: 240px;
@@ -179,14 +171,6 @@ body.index-page {
   padding: 8px 10px;
   z-index: 5;
   text-align: left;
-}
-
-/* Hard lock terminal to left alignment */
-.terminal-wrap,
-.terminal-wrap *,
-#terminal,
-#terminal * {
-  text-align: left !important;
 }
 
 .terminal-header {
@@ -243,7 +227,7 @@ body.index-page {
 }
 
 /* ────────────────────────────────────────────────
-   CRT STATIC BACKGROUND (index)
+   CRT STATIC BACKGROUND
    ──────────────────────────────────────────────── */
 #intro.stage-2::before,
 #intro.stage-2::after {
@@ -298,7 +282,7 @@ body.index-page {
 }
 
 /* ────────────────────────────────────────────────
-   FLASH (impact pulses) – shared (index + trueSource)
+   FLASH (impact pulses)
    ──────────────────────────────────────────────── */
 #flash {
   position: fixed;
@@ -314,9 +298,7 @@ body.index-page {
     rgba(255,255,255,0) 100%
   );
   will-change: opacity, transform, filter;
-  transform: translateZ(0);
   transition: opacity 25ms linear;
-  filter: saturate(1.4) hue-rotate(0);
 }
 
 #flash.pop {
@@ -326,44 +308,38 @@ body.index-page {
 }
 
 /* ────────────────────────────────────────────────
-   SOURCE LINK (bottom-right, index)
+   SOURCE LINK (index)
    ──────────────────────────────────────────────── */
 .source-link {
   position: fixed;
   bottom: 16px;
   right: 20px;
   z-index: 31000;
-  font-family: "Courier New", Courier, monospace;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   color: rgba(255,255,255,0.65);
-  text-decoration: none;
   text-transform: uppercase;
   opacity: 0;
   transition: opacity 600ms ease-out, color 200ms;
   pointer-events: none;
 }
 
-/* Fade in once main site is revealed */
 #site.revealed ~ .source-link {
   opacity: 1;
   pointer-events: auto;
 }
-
 .source-link:hover {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* ────────────────────────────────────────────────
-   SOURCE PAGE (source.html)
+   SOURCE PAGE
    ──────────────────────────────────────────────── */
-
 .source-page .wrap {
   text-align: left;
   max-width: 720px;
   width: 100%;
   padding: 24px;
-  letter-spacing: 0.03em;
   opacity: 0;
   animation: fadeIn 900ms ease-out forwards;
 }
@@ -374,16 +350,14 @@ body.index-page {
   border-radius: 4px;
   box-shadow: 0 0 16px rgba(0,0,0,0.8);
   padding: 14px 16px;
-  position: relative;
-  overflow: hidden;
   cursor: pointer;
 }
 
 .terminal-title {
   font-size: 0.7rem;
-  text-transform: uppercase;
   opacity: 0.6;
   margin-bottom: 6px;
+  text-transform: uppercase;
   letter-spacing: 0.12em;
 }
 
@@ -393,10 +367,6 @@ body.index-page {
   white-space: pre-wrap;
   min-height: 120px;
   text-shadow: 0 0 1px rgba(255,255,255,0.4);
-}
-
-#type-body {
-  display: inline;
 }
 
 .cursor {
@@ -414,13 +384,9 @@ body.index-page {
   margin-top: 16px;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
-a {
-  color: rgba(255,255,255,0.75);
-  text-decoration: none;
-}
+a { color: rgba(255,255,255,0.75); text-decoration: none; }
 a:hover {
   color: #fff;
   text-shadow: 0 0 6px rgba(255,255,255,0.5);
@@ -432,9 +398,8 @@ a:hover {
 }
 
 /* ────────────────────────────────────────────────
-   TRUE SOURCE PAGE (trueSource.html)
+   TRUE SOURCE PAGE
    ──────────────────────────────────────────────── */
-
 .true-source-page .wrap {
   opacity: 0;
   pointer-events: none;
@@ -444,18 +409,13 @@ a:hover {
   max-width: 720px;
   width: 100%;
   padding: 24px;
-  letter-spacing: 0.03em;
-  position: relative;
   z-index: 10;
 }
 
-/* Override pointer cursor from source-page */
 .true-source-page .terminal-panel {
   border: 1px solid rgba(255,255,255,0.18);
   background: #050505;
   border-radius: 4px;
   box-shadow: 0 0 16px rgba(0,0,0,0.8);
   padding: 14px 16px;
-  overflow: hidden;
-  cursor: default;
 }
