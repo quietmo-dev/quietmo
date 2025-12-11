@@ -1,186 +1,152 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
 
-  if (body.classList.contains("index-page")) {
-    initIndexPage();
-  }
-
-  if (body.classList.contains("source-page")) {
-    initSourcePage();
-  }
-
-  if (body.classList.contains("true-source-page")) {
-    initTrueSourcePage();
-  }
+  if (body.classList.contains("index-page")) initIndexPage();
+  if (body.classList.contains("source-page")) initSourcePage();
+  if (body.classList.contains("true-source-page")) initTrueSourcePage();
 });
 
-/* Shared impact flash sequence (index + trueSource) */
+/* Shared impact pulses */
 function impactFlashSequence(flashEl) {
   if (!flashEl) return;
   const hits = [0, 120, 260, 360, 520];
-  hits.forEach((t) => {
+  hits.forEach(time => {
     setTimeout(() => {
       flashEl.classList.add("pop");
       setTimeout(() => flashEl.classList.remove("pop"), 40);
-    }, t);
+    }, time);
   });
 }
 
 /* ────────────────────────────────────────────────
-   INDEX PAGE LOGIC
+   INDEX LOGIC
    ──────────────────────────────────────────────── */
 function initIndexPage() {
-  const intro      = document.getElementById("intro");
-  const introInner = document.querySelector(".intro-inner");
-  const site       = document.getElementById("site");
-  const headline   = document.getElementById("headline");
-  const loading    = document.getElementById("loading-block");
-  const terminal   = document.getElementById("terminal");
-  const flash      = document.getElementById("flash");
+  const intro       = document.getElementById("intro");
+  const introInner  = document.querySelector(".intro-inner");
+  const site        = document.getElementById("site");
+  const headline    = document.getElementById("headline");
+  const loading     = document.getElementById("loading-block");
+  const terminal    = document.getElementById("terminal");
+  const flash       = document.getElementById("flash");
   const helloTextEl = document.getElementById("hello-text");
-
-  if (!intro || !site || !headline || !loading || !terminal || !flash || !helloTextEl) {
-    return;
-  }
 
   const helloString = "Hello World!";
 
+  /* Boot lines */
   const bootLines = [
     "[IN] Starting introspective sweep...",
     "[IN] Loading narrative stack...",
     "[SC] Scanning for active identities...",
     "[SC] Found: ego.default (uptime: long)",
-    "[AN] Evaluating ego.default for inconsistencies...",
-    "[WR] ego.default exhibits rigid pattern sets",
-    "[SG] Sending SIGTERM to ego.default...",
-    "[SG] No response. Escalating...",
+    "[AN] Evaluating ego.default...",
+    "[WR] ego.default exhibits rigid patterns",
+    "[SG] Sending SIGTERM...",
+    "[SG] Escalating...",
     "[SG] Sending SIGKILL...",
-    "[OK] ego.default terminated (signal 9)",
-    "[GC] Detecting residual impulses...",
+    "[OK] ego.default terminated",
     "[GC] Flushing cached reactions...",
-    "[GC] Clearing behavioral residues...",
-    "[OK] Emotional subroutine cleanup complete",
+    "[GC] Clearing residues...",
+    "[OK] Emotional cleanup complete",
     "[IM] Collecting stale self-images...",
-    "[IM] Pruning recursive self-judgments...",
+    "[IM] Pruning judgments...",
     "[OK] Outdated roles unmounted",
-    "[EX] Detaching inherited expectations...",
-    "[EX] Dropping validation dependencies...",
+    "[EX] Detaching expectations...",
+    "[EX] Dropping dependencies...",
     "[OK] Validation subsystem offline",
-    "[VO] Rewriting internal monologue schema...",
-    "[VO] Installing observer-mode driver...",
+    "[VO] Rewriting monologue schema...",
     "[OK] Observer layer calibrated",
     "[DR] Removing abandoned ambitions...",
-    "[DR] Unlinking obsolete desires...",
-    "[OK] Motivational kernel cleaned",
-    "[VA] Reorganizing narrative priorities...",
+    "[OK] Kernel cleaned",
     "[VA] Sorting core values...",
-    "[OK] Value alignment successful",
+    "[OK] Alignment successful",
     "[PN] Initializing persona.next...",
-    "[PN] Generating adaptive identity framework...",
-    "[PN] Spawning behavior interfaces...",
     "[OK] persona.next seeded",
-    "[RT] Mapping emotion → action channels...",
-    "[RT] Installing honesty filter (ENABLED)...",
-    "[RT] Removing performance mask...",
-    "[OK] Expression routing updated",
-    "[IO] Linking persona.next to output channel...",
-    "[IO] Establishing direct expression pipeline...",
+    "[RT] Updating expression routes...",
     "[OK] Output path stable",
-    "[VR] Checking for leftover personas...",
-    "[VR] No lingering identities detected",
+    "[VR] Checking for leftovers...",
     "[OK] Identity space clean",
-    "[AU] Computing authenticity signature...",
-    "[OK] Authenticity verified",
-    "[AU] Projection layer disabled",
-    "[CR] Warming cognitive cores...",
-    "[CR] Activating intuitive processes...",
-    "[CR] Booting improvisational engine...",
-    "[OK] Cognitive systems synchronized",
-    "[HL] Emotional stability within range",
-    "[HL] Self-awareness resolution: high",
-    "[OK] Baseline integrity confirmed",
+    "[AU] Authenticity verified",
+    "[CR] Activating improvisational engine...",
+    "[OK] Cognitive sync complete",
     "[RD] persona.next online",
-    "[RD] Operating without ego.default",
     "[DN] Boot sequence complete"
   ];
 
+  /* Boot print loop */
   let bootIndex = 0;
-  function pushBootLine() {
+  const bootInterval = setInterval(() => {
     const line = document.createElement("div");
     line.textContent = bootLines[bootIndex];
     terminal.appendChild(line);
     terminal.scrollTop = terminal.scrollHeight;
-    bootIndex++;
-    if (bootIndex >= bootLines.length) bootIndex = 0;
-  }
 
-  const bootInterval = setInterval(pushBootLine, 120);
+    bootIndex = (bootIndex + 1) % bootLines.length;
+  }, 120);
 
-  // Loading → Static CRT
+  /* Sequence timing */
   setTimeout(() => {
     loading.classList.add("hidden");
     intro.classList.add("stage-2");
-    headline.textContent = "PERSONA.NEXT ONLINE";
-    headline.classList.add("flash");
-    setTimeout(() => headline.classList.remove("flash"), 160);
+    flashHeadline("PERSONA.NEXT ONLINE");
   }, 5200);
 
-  // Identity rewrite
   setTimeout(() => {
-    headline.textContent = "IDENTITY REWRITE COMPLETE";
-    headline.classList.add("flash");
-    setTimeout(() => headline.classList.remove("flash"), 160);
+    flashHeadline("IDENTITY REWRITE COMPLETE");
   }, 7200);
 
-  // Final sequence: ENTER + flashes + roll
   setTimeout(() => {
     intro.classList.add("v-roll");
-    headline.textContent = "ENTER";
-    headline.classList.add("flash");
-    setTimeout(() => headline.classList.remove("flash"), 200);
+    flashHeadline("ENTER");
     impactFlashSequence(flash);
     setTimeout(() => intro.classList.remove("v-roll"), 200);
   }, 8300);
 
-  // Cut to pure black
   setTimeout(() => {
     intro.classList.remove("stage-2");
     intro.style.background = "#000";
     introInner.style.opacity = "0";
   }, 8900);
 
-  // Fade main site in, fade intro out
   setTimeout(() => {
     clearInterval(bootInterval);
     site.classList.add("revealed");
     intro.classList.add("fade-out");
-
-    // Typewriter: Hello World!
-    let i = 0;
-    function typeHello() {
-      if (i <= helloString.length) {
-        helloTextEl.textContent = helloString.slice(0, i);
-        i++;
-        setTimeout(typeHello, 90);
-      }
-    }
     typeHello();
   }, 9300);
 
-  intro.addEventListener("transitionend", (e) => {
+  intro.addEventListener("transitionend", e => {
     if (e.propertyName === "opacity" && intro.classList.contains("fade-out")) {
       intro.style.display = "none";
       document.body.style.overflow = "auto";
     }
   });
+
+  function flashHeadline(text) {
+    headline.textContent = text;
+    headline.classList.add("flash");
+    setTimeout(() => headline.classList.remove("flash"), 160);
+  }
+
+  function typeHello() {
+    let i = 0;
+    function step() {
+      if (i <= helloString.length) {
+        helloTextEl.textContent = helloString.slice(0, i);
+        i++;
+        setTimeout(step, 90);
+      }
+    }
+    step();
+  }
 }
 
 /* ────────────────────────────────────────────────
-   SOURCE PAGE LOGIC (source.html)
+   SOURCE PAGE LOGIC
    ──────────────────────────────────────────────── */
 function initSourcePage() {
   const target = document.getElementById("type-body");
-  const panel = document.querySelector(".terminal-panel");
+  const panel  = document.querySelector(".terminal-panel");
   if (!target || !panel) return;
 
   const text =
@@ -191,43 +157,37 @@ entrypoint: index.html
 source view: source.html
 
 This build contains:
-- intro overlay with verbose boot log
-- persona.next identity rewrite sequence
-- flash-driven transition into main scene
-- typewriter "Hello World!" landing
+- verbose boot log
+- identity rewrite sequence
+- flash-driven transition
+- typewriter landing screen
 
 Static, client-side only.
-No frameworks. No tracking.
-Just a clean surface and a booting self.`;
+No frameworks. No tracking.`;
 
   let i = 0;
-  const speed = 30; // ms per character
-
-  function typeNext() {
+  const speed = 30;
+  (function type() {
     if (i <= text.length) {
-      target.textContent = text.slice(0, i);
-      i++;
-      setTimeout(typeNext, speed);
+      target.textContent = text.slice(0, i++);
+      setTimeout(type, speed);
     }
-  }
+  })();
 
-  typeNext();
-
-  // Click/touch on terminal -> trueSource.html
-  panel.addEventListener("click", function () {
+  panel.addEventListener("click", () => {
     window.location.href = "trueSource.html";
   });
 }
 
 /* ────────────────────────────────────────────────
-   TRUE SOURCE PAGE LOGIC (trueSource.html)
+   TRUE SOURCE PAGE LOGIC
    ──────────────────────────────────────────────── */
 function initTrueSourcePage() {
   const flash   = document.getElementById("flash");
   const content = document.getElementById("content");
   const target  = document.getElementById("type-body");
 
-  if (!flash || !content || !target) return;
+  impactFlashSequence(flash);
 
   const text =
 `Lorem Ipsum
@@ -240,30 +200,22 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 Build: trueSource.html
 Mode: inspection
 Notes:
-- Simulated output for demonstration only.
-- Static file, no real backend.
-- Source of quietmo.dev landing behavior.`;
+- Demonstration output
+- Static file, no backend
+- Mirrors quietmo.dev landing behavior`;
 
-  // Run flashes immediately on load (same pattern as index)
-  impactFlashSequence(flash);
-
-  // Reveal terminal just after last flash hit
-  const revealDelay = 700; // > 520 + 40
   setTimeout(() => {
     content.style.opacity = "1";
     content.style.filter = "blur(0)";
     content.style.pointerEvents = "auto";
 
-    // Typewriter starts as content fades in
     let i = 0;
     const speed = 30;
-    function typeNext() {
+    (function type() {
       if (i <= text.length) {
-        target.textContent = text.slice(0, i);
-        i++;
-        setTimeout(typeNext, speed);
+        target.textContent = text.slice(0, i++);
+        setTimeout(type, speed);
       }
-    }
-    typeNext();
-  }, revealDelay);
+    })();
+  }, 700);
 }
