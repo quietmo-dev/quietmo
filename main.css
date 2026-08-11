@@ -1,0 +1,100 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --safe-pad: 16px;
+  --channel-r: #ff1e3c;
+  --channel-g: #14ff6e;
+  --channel-b: #1e6bff;
+  --nudge-duration: 1.6s;
+  --nudge-dim: 0.82;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+
+  background: radial-gradient(
+    1100px 900px at 50% 42%,
+    #0b0b0c 0%,
+    #050506 42%,
+    #000 100%
+  );
+
+  -webkit-text-size-adjust: 100%;
+}
+
+.stage {
+  width: 100%;
+  height: 100%;
+
+  padding:
+    max(var(--safe-pad), env(safe-area-inset-top))
+    max(var(--safe-pad), env(safe-area-inset-right))
+    max(var(--safe-pad), env(safe-area-inset-bottom))
+    max(var(--safe-pad), env(safe-area-inset-left));
+
+  display: grid;
+  place-items: center;
+}
+
+/* animated by main.js: filter (blur), transform (drift) */
+.glyph {
+  position: relative;
+  width: min(70vw, 420px);
+  aspect-ratio: 1;
+
+  user-select: none;
+  will-change: filter, transform;
+}
+
+/* animated by main.js: transform (glitch split), opacity on [data-layer] paths */
+.glyph .channel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.channel-r { color: var(--channel-r); }
+.channel-g { color: var(--channel-g); }
+.channel-b { color: var(--channel-b); }
+
+#motion-gate {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 9999;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .glyph.nudge {
+    animation: nudgePulse var(--nudge-duration) ease-in-out 1;
+  }
+}
+
+@keyframes nudgePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: var(--nudge-dim); }
+}
+
+@media (min-width: 900px) {
+  .glyph {
+    width: min(32vw, 460px);
+  }
+}
